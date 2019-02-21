@@ -48,6 +48,8 @@ const notFoundHandler = (err, req, res, next) => {
 const genericErrorHandler = (err, req, res, next) => {
   const statusCode = err.status || 500
 
+  console.log(err)
+
   res.status(statusCode)
   return res.send({
     status: statusCode,
