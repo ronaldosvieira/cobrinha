@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser')
 const express = require('express')
 const logger = require('morgan')
+const fs = require('fs')
 const reinforce = require('reinforcenode')
 const app = express()
 const {
@@ -130,6 +131,21 @@ app.use('*', fallbackHandler)
 app.use(notFoundHandler)
 app.use(genericErrorHandler)
 
-app.listen(app.get('port'), () => {
+server = app.listen(app.get('port'), () => {
   console.log('Server listening on port %s', app.get('port'))
 })
+
+var onClose = function() {
+  fs.writeFile('model/agent.json', JSON.stringify(agent.toJSON()), 
+    'utf8', 
+    (err) => {
+      if (err) console.error(err);
+      else console.log("Snake has been saved from doom.");
+
+      server.close()
+      process.exit();
+    })
+}
+
+process.on('SIGTERM', onClose)
+process.on('SIGINT', onClose)
