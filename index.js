@@ -19,7 +19,6 @@ app.enable('verbose errors')
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(poweredByHandler)
-app.use(genericErrorHandler)
 
 // --- SNAKE LOGIC GOES BELOW THIS LINE ---
 
