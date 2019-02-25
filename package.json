@@ -13,10 +13,12 @@
   ],
   "dependencies": {
     "body-parser": "^1.18.3",
+    "commander": "^2.19.0",
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.3.0",
     "reinforcenode": "^1.0.1"
   },
   "devDependencies": {

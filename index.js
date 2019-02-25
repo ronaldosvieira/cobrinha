@@ -2,6 +2,8 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const logger = require('morgan')
 const fs = require('fs')
+const program = require('commander')
+const fetch = require('node-fetch')
 const reinforce = require('reinforcenode')
 const app = express()
 const {
@@ -10,6 +12,11 @@ const {
   genericErrorHandler,
   poweredByHandler
 } = require('./handlers.js')
+
+program
+  .version('0.1.0')
+  .option('-t, --train <n>', 'Train model')
+  .parse(process.argv)
 
 // For deployment to Heroku, the port needs to be set using ENV, so
 // we check for the port number in process.env
@@ -122,6 +129,9 @@ app.post('/end', (request, response) => {
 
   agent.learn(-1.0)
 
+  if (program.train && program.train > 0)
+    train()
+
   return response.json({})
 })
 
@@ -154,3 +164,36 @@ var onClose = function() {
 
 process.on('SIGTERM', onClose)
 process.on('SIGINT', onClose)
+
+var train = function() {
+  program.train--
+
+  fetch("http://localhost:3005/games", {
+    method: "POST",
+    body: JSON.stringify({
+      width: 15,
+      height: 15,
+      food: 10,
+      MaxTurnsToNextFoodSpawn: 0,
+      "snakes": snakes,
+    })
+  }).then(resp => resp.json())
+    .then(json => {
+      const id = json.ID
+      fetch(`http://localhost:3005/games/${id}/start`, {
+        method: "POST"
+      }).catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
+}
+
+var snakes = []
+
+snakes.push({
+  name: 'Cobrinha',
+  url: 'http://localhost:' + app.get('port')
+})
+
+if (program.train) {
+  train()
+}
