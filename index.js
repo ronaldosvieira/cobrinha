@@ -32,7 +32,17 @@ env.getMaxNumActions = function() {return 4}
 
 directions = ['up', 'down', 'left', 'right']
 
-var spec = {alpha: 0.01}
+var spec = {
+  alpha: 0.01,
+  update: 'qlearn',
+  gamma: 0.9,
+  epsilon: 0.2,
+  experience_add_every: 10,
+  experience_size: 5000,
+  learning_steps_per_iteration: 20,
+  tderror_clamp: 1.0,
+  num_hidden_units: 100
+}
 agent = new Agent(env, spec)
 
 var size = 0
@@ -77,17 +87,20 @@ app.post('/move', (request, response) => {
 
   var board = request.body.board
   var me = request.body.you
+  var turn = request.body.turn
 
   // check whether has eaten or not
   new_size = me.body.length
 
-  if (new_size > size) agent.learn(1)
-  else agent.learn(0)
+  if (turn > 0) {
+    if (new_size > size) agent.learn(1.0)
+    else agent.learn(0.0)
+  }
 
   size = new_size
 
   var state = state_from_board(board)
-
+  
   var action = agent.act(state)
 
   // Response data
@@ -101,7 +114,7 @@ app.post('/move', (request, response) => {
 app.post('/end', (request, response) => {
   // NOTE: Any cleanup when a game is complete.
 
-  agent.learn(-1)
+  agent.learn(-1.0)
 
   return response.json({})
 })
