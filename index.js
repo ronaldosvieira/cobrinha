@@ -46,6 +46,11 @@ var spec = {
 }
 agent = new Agent(env, spec)
 
+if (fs.existsSync('model/agent.json')) {
+  model = JSON.parse(fs.readFileSync('model/agent.json', 'utf8'))
+  agent.fromJSON(model)
+}
+
 var size = 0
 
 var state_from_board = function(board) {
