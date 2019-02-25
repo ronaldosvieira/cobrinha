@@ -54,7 +54,7 @@ var state_from_board = function(board) {
     state[food.x][food.y] = 1
   }
 
-  return state
+  return [].concat.apply([], state)
 }
 
 // Handle POST request to '/start'
