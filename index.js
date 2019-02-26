@@ -137,8 +137,10 @@ app.post('/end', (request, response) => {
 
   agent.learn(-1.0)
 
-  if (program.train && program.train > 0)
-    train()
+  if (program.train) {
+    if (program.train % 100 == 0) saveModel()
+    if (program.train > 0) train()
+  }
 
   return response.json({})
 })
@@ -158,10 +160,13 @@ server = app.listen(app.get('port'), () => {
   console.log('Server listening on port %s', app.get('port'))
 })
 
-var onClose = function() {
+var saveModel = function(callback) {
   fs.writeFile('model/agent.json', JSON.stringify(agent.toJSON()), 
-    'utf8', 
-    (err) => {
+    'utf8', callback)
+}
+
+var onClose = function() {
+  saveModel((err) => {
       if (err) console.error(err);
       else console.log("Snake has been saved from doom.");
 
