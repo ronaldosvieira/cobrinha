@@ -61,20 +61,28 @@ if (fs.existsSync('model/agent.json')) {
 var size = 0
 
 var state_from_board = function(board) {
-  state = Array(grid_size).fill(Array(grid_size).fill(0))
+  state = []
+
+  for (var i = 0; i < grid_size; i++) {
+    aux = []
+    for (var j = 0; j < grid_size; j++) {
+      aux.push(0)
+    }
+    state.push(aux)
+  }
 
   for (var i in board.snakes) {
     for (var j in board.snakes[i].body) {
       body = board.snakes[i].body[j]
 
-      state[body.x][body.y] = -1
+      state[body.y][body.x] = -1
     }
   }
 
   for (var i in board.food) {
     food = board.food[i]
 
-    state[food.x][food.y] = 1
+    state[food.y][food.x] = 1
   }
 
   return [].concat.apply([], state)
